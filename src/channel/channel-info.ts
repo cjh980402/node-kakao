@@ -9,6 +9,7 @@ import { Chatlog } from '../chat';
 import { DisplayUserInfo } from '../user';
 import { Channel } from './channel';
 import { ChannelType } from './channel-type';
+import { ChannelMetaType } from './meta';
 
 export interface ChannelMeta {
 
@@ -26,7 +27,7 @@ export interface SetChannelMeta extends ChannelMeta {
 
 }
 
-export type ChannelMetaMap = Record<ChannelType, SetChannelMeta>
+export type ChannelMetaMap = Record<ChannelMetaType, SetChannelMeta>
 
 /**
  * Common channel info
@@ -129,5 +130,35 @@ export namespace NormalChannelInfo {
       joinTime: 0,
     }, info);
   }
+
+}
+
+/**
+ * Channel with info data
+ */
+export interface ChannelData<T> {
+
+  /**
+   * Channel info snapshot.
+   */
+  readonly info: Readonly<T>;
+
+}
+
+/**
+ * Channel data on login
+ */
+export interface LoginData<T> {
+
+  /**
+   * Info update time
+   */
+  lastUpdate: number;
+
+  channel: T;
+
+}
+
+export interface NormalChannelData extends Channel, ChannelData<NormalChannelInfo> {
 
 }

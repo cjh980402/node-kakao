@@ -4,7 +4,16 @@
  * Copyright (c) storycraft. Licensed under the MIT Licence.
  */
 
-export * from './api';
+export * as api from './api';
+export {
+  AuthApiClient,
+  KnownAuthStatusCode,
+  ServiceApiClient,
+  OAuthApiClient,
+  AttachmentApiClient,
+  AttachmentApi,
+  xvc
+} from './api';
 export * from './channel';
 export * from './chat';
 export * from './client';
@@ -26,6 +35,7 @@ export { MediaUploadTemplate } from './talk/media';
 export * from './user';
 export * as util from './util';
 export * from './voip';
+export * from './loader';
 
 export { Long } from 'bson';
 

@@ -5,12 +5,13 @@
  */
 
 import { Long } from 'bson';
-import { Channel, ChannelList } from '../../channel';
+import { Channel, ChannelStore, LoginData } from '../../channel';
 import { TalkSession } from '../client';
 import { EventContext, TypedEmitter } from '../../event';
 import {
   InformedOpenLink,
   OpenChannel,
+  OpenChannelData,
   OpenChannelManageSession,
   OpenLink,
   OpenLinkChannelTemplate,
@@ -25,62 +26,83 @@ import {
   OpenLinkUpdateTemplate,
 } from '../../openlink';
 import { AsyncCommandResult, DefaultRes, KnownDataStatusCode } from '../../request';
-import { ChannelListUpdater, TalkChannelListHandler } from '../channel';
+import { ChannelListUpdater, TalkChannelListHandler, updateChatList } from '../channel';
 import { OpenChannelListEvents } from '../event';
 import { Managed } from '../managed';
 import { TalkOpenChannel } from './talk-open-channel';
 import { TalkOpenChannelListHandler } from './talk-open-channel-handler';
 import { TalkOpenChannelManageSession } from './talk-open-channel-session';
-import { TalkOpenLinkSession } from './talk-open-link-session';
-import { OpenLinkUpdater, TalkOpenLinkHandler } from './talk-open-link-handler';
+import { OpenLinkUpdater } from './talk-open-link-handler';
+import { OpenChannelUserInfo } from '../../user';
+import { ClientDataLoader } from '../../loader';
+import { TalkClientLinkStore } from './client-link-store';
+
+type TalkOpenChannelListEvents = OpenChannelListEvents<TalkOpenChannel, OpenChannelUserInfo>;
 
 /**
  * Manage open profile, channel.
  */
 export class TalkOpenChannelList
-  extends TypedEmitter<OpenChannelListEvents>
-  implements Managed<OpenChannelListEvents>, OpenChannelManageSession,
-  ChannelList<TalkOpenChannel>, OpenLinkSession, OpenLinkService {
-  private _handler: TalkChannelListHandler;
-  private _openHandler: TalkOpenChannelListHandler;
-  private _linkHandler: TalkOpenLinkHandler;
+  extends TypedEmitter<TalkOpenChannelListEvents>
+  implements Managed<TalkOpenChannelListEvents>, OpenChannelManageSession,
+  ChannelStore<TalkOpenChannel>, OpenLinkSession,
+  ChannelListUpdater<TalkOpenChannel>, OpenLinkUpdater {
 
-  private _linkSession: TalkOpenLinkSession;
+  private _handler: TalkChannelListHandler<TalkOpenChannel>;
+  private _openHandler: TalkOpenChannelListHandler<TalkOpenChannel, OpenChannelUserInfo>;
+  private _linkStore: TalkClientLinkStore;
+  
   private _manageSession: TalkOpenChannelManageSession;
 
   private _map: Map<string, TalkOpenChannel>;
-  private _clientMap: Map<string, InformedOpenLink>;
 
   constructor(
     private _session: TalkSession,
+    private _loader: ClientDataLoader,
     list: TalkOpenChannel[],
     clientLinkList: InformedOpenLink[],
   ) {
     super();
 
-    const infoUpdater: ChannelListUpdater<TalkOpenChannel> & OpenLinkUpdater = {
-      addChannel: (channel) => this.addChannel(channel),
-      removeChannel: (channel) => this.deleteChannel(channel.channelId),
-      addClientLink: (link) => this._clientMap.set(link.openLink.linkId.toString(), link),
-      deleteClientLink: (linkId) => this._clientMap.delete(linkId.toString()),
-    };
-
     this._manageSession = new TalkOpenChannelManageSession(_session);
-    this._linkSession = new TalkOpenLinkSession(_session);
 
-    this._handler = new TalkChannelListHandler(this, infoUpdater);
-    this._openHandler = new TalkOpenChannelListHandler(this, infoUpdater);
-    this._linkHandler = new TalkOpenLinkHandler(this, infoUpdater);
-
-    this._clientMap = new Map();
-    if (clientLinkList.length > 0) {
-      clientLinkList.forEach((link) => this._clientMap.set(link.openLink.linkId.toString(), link));
-    }
+    this._handler = new TalkChannelListHandler(this, this, this);
+    this._openHandler = new TalkOpenChannelListHandler(this, this, this);
+    this._linkStore = new TalkClientLinkStore(_session, clientLinkList);
 
     this._map = new Map();
     if (list.length > 0) {
       list.forEach((channel) => this._map.set(channel.channelId.toString(), channel));
     }
+  }
+
+  get linkService(): OpenLinkService {
+    return this._linkStore;
+  }
+
+  /**
+   * @param {InformedOpenLink} link
+   * @deprecated
+   */
+  addClientLink(link: InformedOpenLink): void {
+    this._linkStore.addClientLink(link);
+  }
+
+  /**
+   * @param {Long} linkId
+   * @return {boolean}
+   * @deprecated
+   */
+  deleteClientLink(linkId: Long): boolean {
+    return this._linkStore.deleteClientLink(linkId);
+  }
+
+  removeChannel(channel: Channel): boolean {
+    return this._map.delete(channel.channelId.toString());
+  }
+
+  async addChannel(channel: Channel): AsyncCommandResult<TalkOpenChannel> {
+    return this.addOpenChannel({ ...channel, linkId: Long.ZERO });
   }
 
   get(channelId: Long): TalkOpenChannel | undefined {
@@ -90,6 +112,7 @@ export class TalkOpenChannelList
   /**
    * Find open channel using linkId
    *
+   * @deprecated
    * @param {Long} linkId
    * @return {TalkOpenChannel | undefined}
    */
@@ -97,6 +120,22 @@ export class TalkOpenChannelList
     for (const channel of this.all()) {
       if (channel.linkId.eq(linkId)) return channel;
     }
+  }
+
+  /**
+   * Find all open channel using same linkId
+   *
+   * @param {Long} linkId
+   * @return {TalkOpenChannel[]}
+   */
+  getLinkChannelList(linkId: Long): TalkOpenChannel[] {
+    const list: TalkOpenChannel[] = [];
+
+    for (const channel of this.all()) {
+      if (channel.linkId.eq(linkId)) list.push(channel);
+    }
+
+    return list;
   }
 
   get size(): number {
@@ -107,40 +146,56 @@ export class TalkOpenChannelList
     return this._map.values();
   }
 
+  /**
+   * @return {IterableIterator<InformedOpenLink>}
+   * @deprecated
+   */
   allClientLink(): IterableIterator<InformedOpenLink> {
-    return this._clientMap.values();
+    return this._linkStore.allClientLink();
   }
 
+  /**
+   * @param {Long} linkId
+   * @return {InformedOpenLink | undefined}
+   * @deprecated
+   */
   getClientLink(linkId: Long): InformedOpenLink | undefined {
-    return this._clientMap.get(linkId.toString());
+    return this._linkStore.getClientLink(linkId);
   }
 
+  /**
+   * @deprecated
+   */
   get clientLinkCount(): number {
-    return this._clientMap.size;
+    return this._linkStore.clientLinkCount;
   }
 
-  private async addChannel(channel: Channel): AsyncCommandResult<TalkOpenChannel> {
-    return this.addOpenChannel({ ...channel, linkId: Long.ZERO });
-  }
-
-  private async addOpenChannel(channel: OpenChannel): AsyncCommandResult<TalkOpenChannel> {
+  async addOpenChannel(channel: OpenChannel, lastUpdate?: number): AsyncCommandResult<TalkOpenChannel> {
     const last = this.get(channel.channelId);
     if (last) return { success: true, status: KnownDataStatusCode.SUCCESS, result: last };
 
-    const talkChannel = new TalkOpenChannel(channel, this._session);
+    const infoStoreRes = await this._loader.loadOpenChannelStore(channel, lastUpdate);
+    const chatStoreRes = await this._loader.loadChatListStore(channel);
 
-    const res = await talkChannel.updateAll();
-    if (!res.success) return res;
+    const talkChannel = new TalkOpenChannel(
+      channel,
+      this._session,
+      infoStoreRes.value,
+      chatStoreRes.value
+    );
 
     this._map.set(channel.channelId.toString(), talkChannel);
 
-    return { success: true, status: res.status, result: talkChannel };
-  }
+    if (infoStoreRes.shouldUpdate) {
+      const res = await talkChannel.updateAll();
+      if (!res.success) return res;
+    }
 
-  private deleteChannel(channelId: Long) {
-    const strId = channelId.toString();
+    if (chatStoreRes.shouldUpdate) {
+      await updateChatList(talkChannel);
+    }
 
-    return this._map.delete(strId);
+    return { success: true, status: KnownDataStatusCode.SUCCESS, result: talkChannel };
   }
 
   async leaveKicked(channel: OpenChannel): AsyncCommandResult {
@@ -161,114 +216,79 @@ export class TalkOpenChannelList
     return res;
   }
 
-  async getLatestLinkList(): AsyncCommandResult<Readonly<InformedOpenLink>[]> {
-    const res = await this._linkSession.getLatestLinkList();
-
-    if (res.success) {
-      const clientMap = new Map();
-
-      res.result.forEach((link) => clientMap.set(link.openLink.linkId.toString(), link));
-
-      this._clientMap = clientMap;
-    }
-
-    return res;
+  getLatestLinkList(): AsyncCommandResult<Readonly<InformedOpenLink>[]> {
+    return this._linkStore.getLatestLinkList();
   }
 
   getOpenLink(...components: OpenLinkComponent[]): AsyncCommandResult<Readonly<OpenLink>[]> {
-    return this._linkSession.getOpenLink(...components);
+    return this._linkStore.getOpenLink(...components);
   }
 
   getJoinInfo(linkURL: string, referer?: string): AsyncCommandResult<Readonly<InformedOpenLink>> {
-    return this._linkSession.getJoinInfo(linkURL, referer);
+    return this._linkStore.getJoinInfo(linkURL, referer);
   }
 
   getKickList(link: OpenLinkComponent): AsyncCommandResult<OpenLinkKickedUserInfo[]> {
-    return this._linkSession.getKickList(link);
+    return this._linkStore.getKickList(link);
   }
 
   removeKicked(link: OpenLinkComponent, kickedUser: OpenLinkKickedUser): AsyncCommandResult {
-    return this._linkSession.removeKicked(link, kickedUser);
+    return this._linkStore.removeKicked(link, kickedUser);
   }
 
   async deleteLink(link: OpenLinkComponent): AsyncCommandResult {
-    const res = await this._linkSession.deleteLink(link);
+    const res = await this._linkStore.deleteLink(link);
 
     if (res.success) {
-      this._clientMap.delete(link.linkId.toString());
-      const channel = this.getChannelByLinkId(link.linkId);
-      if (channel) {
-        this.deleteChannel(channel.channelId);
+      this._linkStore.deleteClientLink(link.linkId);
+      for (const channel of this.getLinkChannelList(link.linkId)) {
+        this.removeChannel(channel);
       }
     }
 
     return res;
   }
 
-  react(link: OpenLinkComponent, flag: boolean): Promise<{ status: number, success: boolean }> {
-    return this._linkSession.react(link, flag);
+  react(link: OpenLinkComponent, flag: boolean): AsyncCommandResult {
+    return this._linkStore.react(link, flag);
   }
 
   getReaction(link: OpenLinkComponent): AsyncCommandResult<[number, boolean]> {
-    return this._linkSession.getReaction(link);
+    return this._linkStore.getReaction(link);
   }
 
   async createOpenChannel(
     template: OpenLinkChannelTemplate & OpenLinkCreateTemplate,
     profile: OpenLinkProfiles
   ): AsyncCommandResult<TalkOpenChannel> {
-    const res = await this._linkSession.createOpenChannel(template, profile);
+    const res = await this._linkStore.createOpenChannel(template, profile);
     if (!res.success) return res;
 
     return this.addOpenChannel(res.result);
   }
 
-  async createOpenDirectProfile(
+  createOpenDirectProfile(
     template: OpenLinkChannelTemplate & OpenLinkCreateTemplate,
     profile: OpenLinkProfiles
   ): AsyncCommandResult<InformedOpenLink> {
-    const res = await this._linkSession.createOpenDirectProfile(template, profile);
-
-    if (res.success) {
-      const link = res.result;
-      this._clientMap.set(link.openLink.linkId.toString(), link);
-    }
-
-    return res;
+    return this._linkStore.createOpenDirectProfile(template, profile);
   }
 
-  async createOpenProfile(
+  createOpenProfile(
     template: OpenLinkProfileTemplate & OpenLinkCreateTemplate
   ): AsyncCommandResult<InformedOpenLink> {
-    const res = await this._linkSession.createOpenProfile(template);
-    
-    if (res.success) {
-      const link = res.result;
-      this._clientMap.set(link.openLink.linkId.toString(), link);
-    }
-
-    return res;
+    return this._linkStore.createOpenProfile(template);
   }
 
-  async updateOpenLink(
+  updateOpenLink(
     link: OpenLinkComponent,
     settings: (OpenLinkChannelTemplate | OpenLinkProfileTemplate) & OpenLinkUpdateTemplate
   ): AsyncCommandResult<InformedOpenLink> {
-    const res = await this._linkSession.updateOpenLink(link, settings);
-    
-    if (res.success) {
-      const link = res.result;
-      const clientProfile = this.getClientLink(link.openLink.linkId);
-      if (clientProfile) {
-        this._clientMap.set(link.openLink.linkId.toString(), link)
-      }
-    }
-
-    return res;
+    return this._linkStore.updateOpenLink(link, settings);
   }
 
-  pushReceived(method: string, data: DefaultRes, parentCtx: EventContext<OpenChannelListEvents>): void {
-    const ctx = new EventContext<OpenChannelListEvents>(this, parentCtx);
+  pushReceived(method: string, data: DefaultRes, parentCtx: EventContext<TalkOpenChannelListEvents>): void {
+    const ctx = new EventContext<TalkOpenChannelListEvents>(this, parentCtx);
 
     for (const channel of this._map.values()) {
       channel.pushReceived(method, data, ctx);
@@ -276,7 +296,7 @@ export class TalkOpenChannelList
 
     this._handler.pushReceived(method, data, parentCtx);
     this._openHandler.pushReceived(method, data, parentCtx);
-    this._linkHandler.pushReceived(method, data, parentCtx);
+    this._linkStore.pushReceived(method, data, parentCtx);
   }
 
   async joinChannel(
@@ -294,17 +314,16 @@ export class TalkOpenChannelList
   /**
    * Initialize TalkChannelList using channelList.
    * @param {TalkOpenChannelList} talkChannelList
-   * @param {OpenChannel[]} channelList
+   * @param {LoginData<OpenChannelData>[]} channelList
    */
   static async initialize(
     talkChannelList: TalkOpenChannelList,
-    channelList: OpenChannel[] = [],
+    channelList: LoginData<OpenChannelData>[] = [],
   ): Promise<TalkOpenChannelList> {
     talkChannelList._map.clear();
-    talkChannelList._clientMap.clear();
 
-    await Promise.all(channelList.map((channel) => talkChannelList.addOpenChannel(channel)));
-    await talkChannelList.getLatestLinkList();
+    await Promise.all(channelList.map((data) => talkChannelList.addOpenChannel(data.channel, data.lastUpdate)));
+    await talkChannelList._linkStore.getLatestLinkList();
 
     return talkChannelList;
   }

@@ -5,12 +5,11 @@
  */
 
 import { SessionConfig } from '../config';
-import { DefaultReq, DefaultRes } from '../request';
-import { BsonDataCodec, LocoPacket } from '../packet';
-import { CommandResult } from '../request';
-import { LocoPacketDispatcher } from './loco-packet-dispatcher';
+import { AsyncCommandResult, DefaultReq, DefaultRes } from '../request';
+import { BsonDataCodec } from '../packet';
 import { PacketAssembler } from './packet-assembler';
 import { BiStream } from '../stream';
+import { LocoPacketCodec } from './loco-packet-codec';
 
 export interface CommandSession {
 
@@ -24,78 +23,139 @@ export interface CommandSession {
 
 }
 
+export interface ConnectionSession extends CommandSession {
+
+  /**
+   * Connection stream
+   */
+  readonly stream: BiStream;
+
+  /**
+   * Listen incoming packets
+   */
+  listen(): AsyncIterableIterator<PacketResData>;
+
+}
+
 export interface PacketResData {
 
+  id: number;
   method: string;
   data: DefaultRes;
   push: boolean;
 
 }
 
-export interface LocoSession extends CommandSession {
-
-  listen(): AsyncIterable<PacketResData> & AsyncIterator<PacketResData>;
-
-  sendPacket(packet: LocoPacket): Promise<LocoPacket>;
-
-  close(): void;
-
-}
-
 /**
- * Create LocoSession using configuration.
+ * Create connection using configuration.
  */
 export interface SessionFactory {
 
-  createSession(config: SessionConfig): Promise<CommandResult<LocoSession>>;
+  connect(config: SessionConfig): AsyncCommandResult<ConnectionSession>;
 
 }
 
-/**
- * Holds current loco session.
- */
-export class DefaultLocoSession implements LocoSession {
+export class LocoSession implements ConnectionSession {
   private _assembler: PacketAssembler<DefaultReq, DefaultRes>;
-  private _dispatcher: LocoPacketDispatcher;
+ 
+  private _codec: LocoPacketCodec;
+
+  private _nextPromise: Promise<boolean> | null;
+
+  private _packetBuffer: PacketResData[];
+  private _requestSet: Set<number>;
 
   constructor(stream: BiStream) {
     this._assembler = new PacketAssembler(BsonDataCodec);
-    this._dispatcher = new LocoPacketDispatcher(stream);
+
+    this._codec = new LocoPacketCodec(stream);
+
+    this._nextPromise = null;
+
+    this._packetBuffer = [];
+    this._requestSet = new Set();
   }
 
-  listen(): { [Symbol.asyncIterator](): AsyncIterator<PacketResData>, next(): Promise<IteratorResult<PacketResData>> } {
-    const iterator = this._dispatcher.listen();
-    const assembler = this._assembler;
+  get stream(): BiStream {
+    return this._codec.stream;
+  }
 
+  private _lastBufRes(): PacketResData | undefined {
+    if (this._packetBuffer.length > 0) return this._packetBuffer[this._packetBuffer.length - 1];
+  }
+
+  private async _readInner(): Promise<boolean> {
+    const read = await this._codec.read();
+
+    if (!read) return false;
+
+    const res = {
+      id: read.header.id,
+      push: !this._requestSet.has(read.header.id),
+      method: read.header.method,
+      data: this._assembler.deconstruct(read)
+    };
+
+    this._packetBuffer.push(res);
+
+    return true;
+  }
+
+  private _readQueued(): Promise<boolean> {
+    if (this._nextPromise) return this._nextPromise;
+
+    this._nextPromise = this._readInner();
+    this._nextPromise.finally(() => this._nextPromise = null);
+
+    return this._nextPromise;
+  }
+
+  async read(): Promise<PacketResData | undefined> {
+    while (this._packetBuffer.length < 1 && await this._readQueued());
+
+    const first = this._packetBuffer[0];
+
+    if (first.push) this._packetBuffer.shift();
+
+    return first;
+  }
+
+  private async _readId(id: number): Promise<PacketResData | undefined> {
+    if (this._requestSet.has(id)) throw new Error(`Packet id collision #${id}`);
+    this._requestSet.add(id);
+
+    while (await this._readQueued()) {
+      const read = this._lastBufRes();
+      if (read && read.id === id && this._requestSet.has(id)) {
+        this._requestSet.delete(id);
+        this._packetBuffer.pop();
+        return read;
+      }
+    }
+  }
+
+  listen(): AsyncIterableIterator<PacketResData> {
     return {
-      [Symbol.asyncIterator](): AsyncIterator<PacketResData> {
+      [Symbol.asyncIterator](): AsyncIterableIterator<PacketResData> {
         return this;
       },
 
-      async next(): Promise<IteratorResult<PacketResData>> {
-        const next = await iterator.next();
+      next: async (): Promise<IteratorResult<PacketResData>> => {
+        const next = await this.read();
 
-        if (next.done) return { done: true, value: null };
-        const { push, packet } = next.value;
+        if (!next) return { done: true, value: null };
 
-        return { done: false, value: { push, method: packet.header.method, data: assembler.deconstruct(packet) } };
-      },
+        return { done: false, value: next };
+      }
     };
   }
 
   async request<T = DefaultRes>(method: string, data: DefaultReq): Promise<DefaultRes & T> {
-    const res = await this._dispatcher.sendPacket(this._assembler.construct(method, data));
-    return this._assembler.deconstruct(res) as DefaultRes & T;
-  }
+    const req = this._assembler.construct(method, data);
+    await this._codec.write(req);
+    const res = await this._readId(req.header.id);
+    if (!res) throw new Error(`Session closed before response #${req.header.id}`);
 
-  sendPacket(packet: LocoPacket): Promise<LocoPacket> {
-    return this._dispatcher.sendPacket(packet);
-  }
-
-  /**
-   * Close session
-   */
-  close(): void {
-    this._dispatcher.stream.close();
+    return res.data as DefaultRes & T;
   }
 }
