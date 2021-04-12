@@ -50,6 +50,60 @@ export interface DisplayUserStruct {
 
 }
 
+export interface ChannelDataStruct {
+
+  /**
+   * Channel id
+   */
+  c: Long;
+
+  /**
+   * Channel type
+   */
+  t: string;
+
+  /**
+   * Active user count
+   */
+  a: number;
+
+  n: number;
+
+  /**
+   * Last seen log id
+   */
+  s: Long;
+
+  /**
+   * Last chatlog
+   */
+  l?: ChatlogStruct;
+
+  i?: Long[];
+  k?: string[];
+
+  m?: unknown;
+
+  mmr: unknown;
+
+  /**
+   * Last log id
+   */
+  ll: Long;
+
+  /**
+   * Last update
+   */
+  o: number;
+
+  jn: number;
+
+  p: boolean;
+
+  li?: Long;
+  otk?: number;
+}
+
 export interface ChannelInfoStruct extends Partial<NormalChannelInfoExtra>, Partial<OpenChannelInfoExtra> {
 
   /**
@@ -110,12 +164,12 @@ export interface ChannelInfoStruct extends Partial<NormalChannelInfoExtra>, Part
   /**
    * Channel metas
    */
-  chatMetas: ChannelMetaStruct[];
+  chatMetas?: ChannelMetaStruct[];
 
   /**
    * Display user list
    */
-  displayMembers: DisplayUserStruct[];
+  displayMembers?: DisplayUserStruct[];
 
   /**
    * push alert setting
@@ -153,10 +207,5 @@ export interface OpenChannelInfoExtra {
    * true if channel is dm
    */
   directChat: boolean;
-
-  /**
-   * Unknown
-   */
-  o: Long;
 
 }

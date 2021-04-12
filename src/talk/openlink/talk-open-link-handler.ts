@@ -5,9 +5,8 @@
  */
 
 import { Long } from 'bson';
-import { InformedOpenLink } from '../..';
-import { EventContext } from '../../event';
-import { OpenLinkService } from '../../openlink';
+import { EventContext, TypedEmitter } from '../../event';
+import { OpenLinkService, InformedOpenLink } from '../../openlink';
 import { InformedOpenLinkStruct, structToOpenLink, structToOpenLinkInfo } from '../../packet/struct';
 import { DefaultRes } from '../../request';
 import { OpenLinkEvent } from '../event';
@@ -23,6 +22,7 @@ export interface OpenLinkUpdater {
 export class TalkOpenLinkHandler implements Managed<OpenLinkEvent> {
   constructor(
     private _service: OpenLinkService,
+    private _emitter: TypedEmitter<OpenLinkEvent>,
     private _updater: OpenLinkUpdater,
   ) {
 
@@ -33,7 +33,7 @@ export class TalkOpenLinkHandler implements Managed<OpenLinkEvent> {
     event: U,
     ...args: Parameters<OpenLinkEvent[U]>
   ) {
-    this._service.emit(event, ...args);
+    this._emitter.emit(event, ...args);
     parentCtx.emit(event, ...args);
   }
 
