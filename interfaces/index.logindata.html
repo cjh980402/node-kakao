@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>LoginData | NodeKakao - v4.0.0</title>
-	<meta name="description" content="Documentation for NodeKakao - v4.0.0">
+	<title>LoginData | NodeKakao - v4.1.3</title>
+	<meta name="description" content="Documentation for NodeKakao - v4.1.3">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">NodeKakao - v4.0.0</a>
+					<a href="../index.html" class="title">NodeKakao - v4.1.3</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">NodeKakao - v4.0.0</a>
+					<a href="../modules.html">NodeKakao - v4.1.3</a>
 				</li>
 				<li>
 					<a href="../modules/index.html">index</a>
@@ -59,7 +59,7 @@
 					<a href="index.logindata.html">LoginData</a>
 				</li>
 			</ul>
-			<h1>Interface LoginData</h1>
+			<h1>Interface LoginData&lt;T&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -69,20 +69,23 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Login data</p>
+						<p>Channel data on login</p>
 					</div>
 				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>T</h4>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="oauth.oauthcredential.html" class="tsd-signature-type" data-tsd-kind="Interface">OAuthCredential</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">LoginData</span>
-							</li>
-						</ul>
+						<span class="target">LoginData</span>
 					</li>
 				</ul>
 			</section>
@@ -93,21 +96,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="index.logindata.html#accesstoken" class="tsd-kind-icon">access<wbr>Token</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#accountid" class="tsd-kind-icon">account<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#autologinaccountid" class="tsd-kind-icon">auto<wbr>Login<wbr>Account<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#countrycode" class="tsd-kind-icon">country<wbr>Code</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#countryiso" class="tsd-kind-icon">country<wbr>Iso</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="index.logindata.html#deviceuuid" class="tsd-kind-icon">deviceUUID</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#displayaccountid" class="tsd-kind-icon">display<wbr>Account<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#maindeviceagentname" class="tsd-kind-icon">main<wbr>Device<wbr>Agent<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#maindeviceappversion" class="tsd-kind-icon">main<wbr>Device<wbr>App<wbr>Version</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="index.logindata.html#refreshtoken" class="tsd-kind-icon">refresh<wbr>Token</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#resetuserdata" class="tsd-kind-icon">reset<wbr>User<wbr>Data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#servertime" class="tsd-kind-icon">server<wbr>Time</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#storyurl" class="tsd-kind-icon">storyURL</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#tokentype" class="tsd-kind-icon">token<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#userid" class="tsd-kind-icon">user<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#channel" class="tsd-kind-icon">channel</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.logindata.html#lastupdate" class="tsd-kind-icon">last<wbr>Update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -115,216 +105,28 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="accesstoken" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> access<wbr>Token</h3>
-					<div class="tsd-signature tsd-kind-icon">access<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="channel" class="tsd-anchor"></a>
+					<h3>channel</h3>
+					<div class="tsd-signature tsd-kind-icon">channel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="oauth.oauthcredential.html">OAuthCredential</a>.<a href="oauth.oauthcredential.html#accesstoken">accessToken</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/oauth/index.ts#L11">oauth/index.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/bf5783e/src/channel/channel-info.ts#L157">channel/channel-info.ts:157</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="accountid" class="tsd-anchor"></a>
-					<h3>account<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">account<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="lastupdate" class="tsd-anchor"></a>
+					<h3>last<wbr>Update</h3>
+					<div class="tsd-signature tsd-kind-icon">last<wbr>Update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L39">api/auth-api-client.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/bf5783e/src/channel/channel-info.ts#L155">channel/channel-info.ts:155</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Account id</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="autologinaccountid" class="tsd-anchor"></a>
-					<h3>auto<wbr>Login<wbr>Account<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">auto<wbr>Login<wbr>Account<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L64">api/auth-api-client.ts:64</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Auto login account id</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="countrycode" class="tsd-anchor"></a>
-					<h3>country<wbr>Code</h3>
-					<div class="tsd-signature tsd-kind-icon">country<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L34">api/auth-api-client.ts:34</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Country code</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="countryiso" class="tsd-anchor"></a>
-					<h3>country<wbr>Iso</h3>
-					<div class="tsd-signature tsd-kind-icon">country<wbr>Iso<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L29">api/auth-api-client.ts:29</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Country iso</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="deviceuuid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> deviceUUID</h3>
-					<div class="tsd-signature tsd-kind-icon">deviceUUID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="oauth.oauthcredential.html">OAuthCredential</a>.<a href="oauth.oauthcredential.html#deviceuuid">deviceUUID</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/oauth/index.ts#L9">oauth/index.ts:9</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="displayaccountid" class="tsd-anchor"></a>
-					<h3>display<wbr>Account<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">display<wbr>Account<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L69">api/auth-api-client.ts:69</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Displayed account id</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="maindeviceagentname" class="tsd-anchor"></a>
-					<h3>main<wbr>Device<wbr>Agent<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">main<wbr>Device<wbr>Agent<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L74">api/auth-api-client.ts:74</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Main device agent</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="maindeviceappversion" class="tsd-anchor"></a>
-					<h3>main<wbr>Device<wbr>App<wbr>Version</h3>
-					<div class="tsd-signature tsd-kind-icon">main<wbr>Device<wbr>App<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L79">api/auth-api-client.ts:79</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Main device app version</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="refreshtoken" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> refresh<wbr>Token</h3>
-					<div class="tsd-signature tsd-kind-icon">refresh<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="oauth.oauthcredential.html">OAuthCredential</a>.<a href="oauth.oauthcredential.html#refreshtoken">refreshToken</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/oauth/index.ts#L12">oauth/index.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="resetuserdata" class="tsd-anchor"></a>
-					<h3>reset<wbr>User<wbr>Data</h3>
-					<div class="tsd-signature tsd-kind-icon">reset<wbr>User<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L49">api/auth-api-client.ts:49</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>true if user data should be reset</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="servertime" class="tsd-anchor"></a>
-					<h3>server<wbr>Time</h3>
-					<div class="tsd-signature tsd-kind-icon">server<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L44">api/auth-api-client.ts:44</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Login server time</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="storyurl" class="tsd-anchor"></a>
-					<h3>storyURL</h3>
-					<div class="tsd-signature tsd-kind-icon">storyURL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L54">api/auth-api-client.ts:54</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Story URL</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="tokentype" class="tsd-anchor"></a>
-					<h3>token<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">token<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L59">api/auth-api-client.ts:59</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>OAuth token type</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="userid" class="tsd-anchor"></a>
-					<h3>user<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">user<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="../modules/openlink.html#linkprivilegemask" class="tsd-signature-type" data-tsd-kind="Type alias">LinkPrivilegeMask</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/storycraft/node-kakao/blob/d9231c7/src/api/auth-api-client.ts#L24">api/auth-api-client.ts:24</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>User id</p>
+							<p>Info update time</p>
 						</div>
 					</div>
 				</section>
@@ -339,9 +141,6 @@
 					<li class="current tsd-kind-module">
 						<a href="../modules/index.html">index</a>
 						<ul>
-							<li class=" tsd-kind-namespace tsd-parent-kind-module">
-								<a href="../modules/index.attachmentapi.html">Attachment<wbr>Api</a>
-							</li>
 							<li class=" tsd-kind-namespace tsd-parent-kind-module">
 								<a href="../modules/index.channelinfo.html">Channel<wbr>Info</a>
 							</li>
@@ -368,53 +167,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module">
+					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="index.logindata.html" class="tsd-kind-icon">Login<wbr>Data</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="index.logindata.html#accesstoken" class="tsd-kind-icon">access<wbr>Token</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="index.logindata.html#channel" class="tsd-kind-icon">channel</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#accountid" class="tsd-kind-icon">account<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#autologinaccountid" class="tsd-kind-icon">auto<wbr>Login<wbr>Account<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#countrycode" class="tsd-kind-icon">country<wbr>Code</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#countryiso" class="tsd-kind-icon">country<wbr>Iso</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="index.logindata.html#deviceuuid" class="tsd-kind-icon">deviceUUID</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#displayaccountid" class="tsd-kind-icon">display<wbr>Account<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#maindeviceagentname" class="tsd-kind-icon">main<wbr>Device<wbr>Agent<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#maindeviceappversion" class="tsd-kind-icon">main<wbr>Device<wbr>App<wbr>Version</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="index.logindata.html#refreshtoken" class="tsd-kind-icon">refresh<wbr>Token</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#resetuserdata" class="tsd-kind-icon">reset<wbr>User<wbr>Data</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#servertime" class="tsd-kind-icon">server<wbr>Time</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#storyurl" class="tsd-kind-icon">storyURL</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#tokentype" class="tsd-kind-icon">token<wbr>Type</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.logindata.html#userid" class="tsd-kind-icon">user<wbr>Id</a>
+								<a href="index.logindata.html#lastupdate" class="tsd-kind-icon">last<wbr>Update</a>
 							</li>
 						</ul>
 					</li>
