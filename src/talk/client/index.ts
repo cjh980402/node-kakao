@@ -86,8 +86,6 @@ export class TalkClient
   }
 
   get channelList(): TalkChannelList {
-    if (!this.logon) throw new Error('Cannot access without logging in');
-
     return this._channelList;
   }
 
@@ -98,8 +96,6 @@ export class TalkClient
   }
 
   get blockList(): TalkBlockSession {
-    if (!this.logon) throw new Error('Cannot access without logging in');
-
     return this._blockList;
   }
 
@@ -158,7 +154,9 @@ export class TalkClient
    * End session
    */
   close(): void {
-    this.session.stream.close();
+    if (!this.session.stream.ended) {
+      this.session.stream.close();
+    }
   }
 
   pushReceived(method: string, data: DefaultRes, ctx: EventContext<TalkClientEvents>): void {
@@ -176,6 +174,8 @@ export class TalkClient
         break;
       }
     }
+
+    super.emit('push_packet', method, data);
   }
 
   /**
@@ -214,7 +214,7 @@ export class TalkClient
   private onError(err: unknown) {
     super.emit('error', err);
 
-    if (this.listeners('error').length > 0) {
+    if (this.listeners('error').length > 0 && !this.session.stream.ended) {
       this.listen();
     } else {
       this.close();
