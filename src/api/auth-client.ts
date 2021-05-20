@@ -205,6 +205,23 @@ export class AuthClient extends WebApiClient implements AccessDataProvider {
         return this.request('POST', AuthClient.getAccountApiPath(this.Agent, 'register_device.json'), form, { 'X-VC': xvc });
     }
 
+    async renew(): Promise<AuthApiStruct> {
+        let form = {
+            "grant_type":"refresh_token",
+            "access_token":this.accessData?.accessToken,
+            "refresh_token":this.accessData?.refreshToken
+        }
+
+        let res = await this.requestMapped<LoginAccessDataStruct>('POST', AuthClient.getAccountApiPath(this.Agent, 'oauth2_token.json'), LoginAccessDataStruct.MAPPER, form) as LoginAccessDataStruct;
+        if(res.status==0){
+            if(this.accessData){
+                this.accessData.accessToken = res.accessToken;
+                this.accessData.refreshToken = res.refreshToken;
+            }
+        }
+        return res;
+    }
+
     async relogin() {
         if (!this.currentLogin) throw new Error('Login data does not exist');
 
