@@ -2,6 +2,7 @@
 # NodeKakao - Loco protocol compatible library
 
 Note: this implemention can stop working anytime.
+this package is **forked from** [storycraft/node-kakao](https://github.com/storycraft/node-kakao).
 
 ## Version Information
 
@@ -32,7 +33,6 @@ client.login('123456789@email.com', '123456')
 ### Simple text reply
 
 ```typescript
-
 import { Chat, ChatMention } from 'node-kakao';
 
 client.on('message', (chat: Chat) => {
@@ -42,7 +42,7 @@ client.on('message', (chat: Chat) => {
 
     if (chat.Text === '안녕하세요') {
         chat.replyText('안녕하세요 ', new ChatMention(userInfo)); // Ex) 안녕하세요 @storycraft
-        //chat.Channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), '안녕하세요')); // 답장형식
+        // chat.Channel.sendTemplate(new AttachmentTemplate(ReplyAttachment.fromChat(chat), '안녕하세요')); // 답장형식
     }
 });
 ```
@@ -50,7 +50,6 @@ client.on('message', (chat: Chat) => {
 ### Simple photo reply
 
 ```typescript
-
 import { Chat, ChatType } from 'node-kakao';
 import * as fs from 'fs';
 
@@ -75,7 +74,6 @@ client.on('message', (chat: Chat) => {
 ### Type filtering
 
 ```typescript
-
 import { Chat, SharpAttachment } from 'node-kakao';
 
 client.on('message', (chat: Chat) => {
@@ -94,7 +92,6 @@ client.on('message', (chat: Chat) => {
 ### Join message
 
 ```typescript
-
 import { ChatChannel, ChatUser, FeedChat, OpenJoinFeed, InviteFeed } from 'node-kakao';
 
 client.on('user_join', (channel: ChatChannel, user: ChatUser, feed?: FeedChat<OpenJoinFeed | InviteFeed>) => {

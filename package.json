@@ -1,7 +1,7 @@
 {
   "name": "node-kakao",
   "version": "3.1.10",
-  "description": "Loco protocol compatible library",
+  "description": "Loco protocol compatible library (Add some modifications to v3)",
   "main": "dist/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha -r ts-node/register ./tests/*.test.ts",
@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/storycraft/node-kakao.git"
+    "url": "https://github.com/cjh980402/node-kakao/tree/v3"
   },
   "dependencies": {
     "axios": "^0.21.1",
