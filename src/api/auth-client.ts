@@ -217,12 +217,11 @@ export class AuthClient extends WebApiClient implements AccessDataProvider {
     }
 
     async renew(): Promise<AuthApiStruct> {
-        if (!this.accessData) throw new Error('Not logon');
-
+        let accessData = this.getLatestAccessData();
         let form: RefreshForm = {
             'grant_type': 'refresh_token',
-            'access_token': this.accessData.accessToken,
-            'refresh_token': this.accessData.refreshToken
+            'access_token': accessData.accessToken,
+            'refresh_token': accessData.refreshToken
         }
 
         let res = await this.requestMapped<RefreshTokenDataStruct>('POST', AuthClient.getAccountApiPath(this.Agent, 'oauth2_token.json'), RefreshTokenDataStruct.MAPPER, form);
@@ -230,8 +229,8 @@ export class AuthClient extends WebApiClient implements AccessDataProvider {
             throw res as LoginError;
         }
 
-        this.accessData.accessToken = res.accessToken;
-        this.accessData.refreshToken = res.refreshToken;
+        accessData.accessToken = res.accessToken;
+        accessData.refreshToken = res.refreshToken;
         return res;
     }
 
