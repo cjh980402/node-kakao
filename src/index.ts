@@ -93,6 +93,7 @@ export * from './talk/struct/struct-base';
 
 export * from './talk/struct/auth/auth-api-struct';
 export * from './talk/struct/auth/login-access-data-struct';
+export * from './talk/struct/auth/refresh-token-data-struct';
 
 export * from './talk/struct/web-api-struct';
 export * from './talk/struct/api/account/client-settings-struct';
